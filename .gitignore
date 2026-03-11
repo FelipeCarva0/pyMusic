@@ -1,0 +1,55 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# ambientes virtuais
+venv/
+env/
+.venv/
+
+# ======================
+# Downloads de mídia
+# ======================
+downloads/
+audio/
+video/
+*.mp3
+*.mp4
+*.mkv
+*.webm
+*.wav
+
+# ======================
+# Configurações locais
+# ======================
+.env
+*.sqlite3
+
+# ======================
+# IDEs
+# ======================
+.vscode/
+.idea/
+
+# ======================
+# Build Android (Buildozer)
+# ======================
+.bin/
+build/
+dist/
+bin/
+.buildozer/
+
+# APK gerado
+*.apk
+
+# ======================
+# Sistema operacional
+# ======================
+.DS_Store
+Thumbs.db
