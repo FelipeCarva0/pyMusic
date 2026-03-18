@@ -1,34 +1,18 @@
-# Importamos a classe principal do Kivy que cria aplicações
+
 from kivy.app import App
-
-# BoxLayout é um tipo de layout que organiza elementos em linha ou coluna
 from kivy.uix.boxlayout import BoxLayout
-
-# Campo de texto onde o usuário digita ou cola algo
 from kivy.uix.textinput import TextInput
-
-# Botão clicável
 from kivy.uix.button import Button
-
-
-# Importamos as funções que criamos no arquivo downloader.py
 from downloader import baixar_video, baixar_audio
 
-
-# Criamos uma classe chamada Interface
-# Ela herda de BoxLayout (herdar significa aproveitar funcionalidades da classe)
 class Interface(BoxLayout):
 
-
-    # O método __init__ é executado quando a classe é criada
-    # Ele funciona como um "construtor"
     def __init__(self, **kwargs):
 
         # Chamamos o construtor da classe pai (BoxLayout)
         super().__init__(orientation="vertical", **kwargs)
 
         # Criamos um campo de texto
-        # hint_text é o texto que aparece como dica
         self.url = TextInput(
             hint_text="Cole a URL do YouTube aqui",
             size_hint=(1, 0.2)
@@ -70,13 +54,13 @@ class Interface(BoxLayout):
 
     # Função chamada quando o botão "Baixar Áudio" é pressionado
     def download_audio(self, instance):
-
-        # Pegamos o link digitado
         url = self.url.text
 
-        # Chamamos a função que baixa áudio
-        baixar_audio(url)
-
+        try:
+            baixar_audio(url)
+            print("Download concluído!")
+        except Exception as e:
+            print("Erro:", e)
 
 
 # Criamos a classe principal da aplicação

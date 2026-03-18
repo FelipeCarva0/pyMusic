@@ -1,16 +1,18 @@
+import os
 import yt_dlp
 import sys
 
 
 def baixar_video(url):
 
+    os.makedirs("downloads/video", exist_ok=True)
+
     ydl_opts = {
         "format": "bestvideo+bestaudio/best",
-        "outtmpl": "downloads/%(title)s.%(ext)s",
+        "outtmpl": "downloads/video/%(title)s.%(ext)s",
         "noplaylist": True,
-
-        # evita erro de logging no Windows GUI
         "quiet": True,
+        "logger": None,
         "no_warnings": True
     }
 
@@ -20,12 +22,14 @@ def baixar_video(url):
 
 def baixar_audio(url):
 
+    os.makedirs("downloads/audio", exist_ok=True)
+
     ydl_opts = {
         "format": "bestaudio/best",
-        "outtmpl": "downloads/%(title)s.%(ext)s",
+        "outtmpl": "downloads/audio/%(title)s.%(ext)s",
         "noplaylist": True,
-
         "quiet": True,
+        "logger": None,
         "no_warnings": True,
 
         "postprocessors": [{
