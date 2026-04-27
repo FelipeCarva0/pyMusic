@@ -1,78 +1,100 @@
+import customtkinter as ctk
+import threading
+from downloader import baixar_video, baixar_audio, obter_info
 
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from downloader import baixar_video, baixar_audio
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-class Interface(BoxLayout):
+app = ctk.CTk()
+app.title("pyMusic Downloader")
+app.geometry("500x400")
 
-    def __init__(self, **kwargs):
+# Título
+titulo = ctk.CTkLabel(app, text="Downloader", font=("Arial", 18))
+titulo.pack(pady=10)
 
-        # Chamamos o construtor da classe pai (BoxLayout)
-        super().__init__(orientation="vertical", **kwargs)
+# Entrada URL
+entry = ctk.CTkEntry(app, width=400, placeholder_text="Cole a URL")
+entry.pack(pady=10)
 
-        # Criamos um campo de texto
-        self.url = TextInput(
-            hint_text="Cole a URL do YouTube aqui",
-            size_hint=(1, 0.2)
-        )
+# Preview título
+preview_label = ctk.CTkLabel(app, text="Título aparecerá aqui")
+preview_label.pack(pady=5)
 
-        # Adiciona o campo de texto à interface
-        self.add_widget(self.url)
+# Barra de progresso
+progress_bar = ctk.CTkProgressBar(app, width=400)
+progress_bar.set(0)
+progress_bar.pack(pady=10)
 
-
-        # Criamos um botão para baixar vídeo
-        btn_video = Button(text="Baixar Vídeo")
-
-        # bind conecta o clique do botão a uma função
-        btn_video.bind(on_press=self.download_video)
-
-        # adiciona o botão à interface
-        self.add_widget(btn_video)
-
-
-        # Criamos outro botão para baixar áudio
-        btn_audio = Button(text="Baixar Áudio")
-
-        # Quando clicado, chama a função download_audio
-        btn_audio.bind(on_press=self.download_audio)
-
-        # adiciona o botão na interface
-        self.add_widget(btn_audio)
+# Status
+status_label = ctk.CTkLabel(app, text="")
+status_label.pack(pady=5)
 
 
-    # Função chamada quando o botão "Baixar Vídeo" é pressionado
-    def download_video(self, instance):
+# 🔹 Atualizar preview automaticamente
+def atualizar_preview(event=None):
+    url = entry.get()
+    if not url:
+        return
 
-        # Pegamos o texto digitado no campo
-        url = self.url.text
+    preview_label.configure(text="Carregando título...")
+    app.update()
 
-        # Chamamos a função do downloader
-        baixar_video(url)
+    def task():
+        titulo = obter_info(url)
+        preview_label.configure(text=titulo)
 
-
-    # Função chamada quando o botão "Baixar Áudio" é pressionado
-    def download_audio(self, instance):
-        url = self.url.text
-
-        try:
-            baixar_audio(url)
-            print("Download concluído!")
-        except Exception as e:
-            print("Erro:", e)
+    threading.Thread(target=task).start()
 
 
-# Criamos a classe principal da aplicação
-class PyMusicApp(App):
-
-    # Esse método define qual será a interface inicial
-    def build(self):
-
-        # Retorna nossa interface personalizada
-        return Interface()
+entry.bind("<FocusOut>", atualizar_preview)
 
 
+# 🔹 Atualizar barra
+def atualizar_progresso(valor):
+    progress_bar.set(valor)
+    app.update()
 
-# Executa a aplicação
-PyMusicApp().run()
+
+# 🔹 Download vídeo
+def baixar_video_click():
+    url = entry.get()
+    if not url:
+        status_label.configure(text="Digite uma URL")
+        return
+
+    progress_bar.set(0)
+    status_label.configure(text="Baixando vídeo...")
+
+    def task():
+        resultado = baixar_video(url, atualizar_progresso)
+        status_label.configure(text=resultado)
+
+    threading.Thread(target=task).start()
+
+
+# 🔹 Download áudio
+def baixar_audio_click():
+    url = entry.get()
+    if not url:
+        status_label.configure(text="Digite uma URL")
+        return
+
+    progress_bar.set(0)
+    status_label.configure(text="Baixando áudio...")
+
+    def task():
+        resultado = baixar_audio(url, atualizar_progresso)
+        status_label.configure(text=resultado)
+
+    threading.Thread(target=task).start()
+
+
+# Botões
+btn_video = ctk.CTkButton(app, text="Baixar Vídeo", command=baixar_video_click)
+btn_video.pack(pady=10)
+
+btn_audio = ctk.CTkButton(app, text="Baixar Áudio", command=baixar_audio_click)
+btn_audio.pack(pady=10)
+
+app.mainloop()
